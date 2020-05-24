@@ -1,0 +1,51 @@
+<p>test works!</p>
+文本绑定:
+{{myHero}}
+<br>
+
+属性绑定:
+<div [innerHTML]="myHero">
+
+</div>
+
+<br>
+条件渲染:
+<a *ngFor="let item of list2; let idx=index">
+    <!-- {{item.name}}
+    仙女:
+    <h1 *ngIf="item.name">
+        {{item.name}}
+    </h1> -->
+    
+    <li>
+        {{idx+1}},{{item}}
+    </li>
+</a>
+
+
+条件渲染:
+
+
+<a *ngFor="let item of list; let idx=index">
+    <h1 *ngIf="item.sex=='female';else elsebolck">
+        {{idx+1}},仙女:{{item.name}}
+    </h1>
+    <ng-template #elsebolck >
+        <h1>{{idx+1}},仙女们的亲人:{{item.name}}</h1>
+    </ng-template>
+
+</a>
+
+
+<button (click)="showEvent($event)">响应函数</button>
+
+|
+<button (click)="login()">login</button>
+|
+<button (click)="loginOut()">log out</button>
+|
+<button (click)="ifLogin()">检查是否登录</button>
+
+
+
+

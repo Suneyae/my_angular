@@ -1,0 +1,56 @@
+<p>booklist works!</p>
+<!-- <a [routerLink]="['/stadium/abc']" routerLinkActive="router-link-active" >场馆abc</a>
+<br>
+method 2: a routerLink="/stadium/abc" -->
+<a routerLink="/stadium/abc">场馆abc</a>
+<br>
+<a [routerLink]="['/stadium/123']" routerLinkActive="router-link-active" >场馆123</a>
+
+
+<h1>共有<span style="color:orangered;font-weight: 800;">{{list.length}}</span>个springboot场馆</h1>
+
+<div *ngFor="let item of list">
+    <!-- <li *ngIf="item">{{item.city}}</li> -->
+    {{item.id}}
+    {{item}}
+    <a  *ngIf="item">场馆:{{item.city}}</a>
+</div>
+
+<button  value="get transactions" (click)="getTrans()"> get transactions</button>
+
+
+<h1 *ngFor="let item of trans">
+    <li>{{item.user.name}}</li>
+    <li>{{item.user.sex}}</li>
+    <li>{{item.exam.location}}</li>
+    <li>{{item.exam.time}}</li>
+    <li>{{item.exam.regStatus}}</li>
+    <li>{{item.status}}</li>
+    
+</h1>
+
+|
+<button  (click)="getTransByRxjs()"> get data by rxjs</button>
+
+<h1>
+    设置请求间隔
+</h1>
+<select [(ngModel)]="interval" >
+        <option value={{item}} *ngFor="let item of optionList">间隔{{item}}秒请求数据</option>
+</select>
+
+<h1>
+    设置请求地址
+</h1>
+
+<!-- <input [(ngModel)]="bindingURL"> -->
+<select [(ngModel)]="bindingURL" >
+    <option value={{item}} *ngFor="let item of web_list">{{item}}</option>
+</select>
+
+
+
+
+|
+<button  (click)="getTransIntervalByRxjs()"> get data by rxjs for may times</button>
+

@@ -1,0 +1,37 @@
+<h1>angular 路由</h1>
+<div>
+  <a routerLink="/booklist" routerLinkActive="router-link-active">预定</a> |
+  <a routerLink="/home">主页</a> |
+  <a routerLink="/race">比赛</a> |
+  <a routerLink="/test">test页面</a>
+  
+  <!-- <a [routerLink]="['/routePath']" routerLinkActive="router-link-active" ></a> -->
+</div>
+<!-- 路由导航-->
+
+<router-outlet></router-outlet>
+<!--路由页面的容器,用于存放路由的内容,也就是说如果点了race这个link，那么这个标签里就会
+显示race所对应的组件里的内容-->
+
+<!-- 
+<h2>
+  products
+</h2>
+<div *ngFor="let product of products" >
+  <h3>
+    <a [title]="product.name + ' details'">
+      {{product.name}}
+    </a>
+    
+  </h3>
+
+  <p *ngIf="product.description ;else otherDesc">
+    Description: {{product.description}}
+  </p>
+  <ng-template #otherDesc>
+    there's no description for {{product.name}}
+  </ng-template>
+
+
+  
+</div> -->

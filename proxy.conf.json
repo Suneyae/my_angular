@@ -1,0 +1,8 @@
+{
+    "/": {
+        "target": "https://www.baidu.com/"
+    },
+    "booklist":{
+        "target": "http://localhost:4200"
+    }
+}
