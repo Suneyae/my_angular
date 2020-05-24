@@ -18,6 +18,18 @@ import { LoginComponent } from './compo/login/login.component';
 import { FormsModule } from '@angular/forms';
 import { AppviewComponent } from './appview/appview.component';
 
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+
+import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { registerLocaleData } from '@angular/common';
+import en from '@angular/common/locales/en';
+
+registerLocaleData(en);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,9 +47,17 @@ import { AppviewComponent } from './appview/appview.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule // 注册HttpClientModule模块
+    
+    NzButtonModule,
+    NzTableModule,
+    NzInputModule,
+    NzModalModule,
+
+    HttpClientModule, // 注册HttpClientModule模块
+    NgZorroAntdModule,
+    BrowserAnimationsModule 
   ],
-  providers: [],
+  providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

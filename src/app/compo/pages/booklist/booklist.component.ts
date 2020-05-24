@@ -3,6 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { TransService } from 'src/app/serivce/trans.service';
 import { Transaction } from '../../entity/Transaction';
 
+//对话框相关
+import { Input, TemplateRef } from '@angular/core';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalCustomComponent } from './NzModalCustomComponent';
 
 @Component({
   selector: 'app-booklist',
@@ -31,6 +35,7 @@ export class BooklistComponent implements OnInit {
   constructor(
     //注入httpClient, 必须加修饰符private,如果不加的话，在ngOnInit()方法里不会有提示,
     private httpClient:HttpClient,
+    private modal: NzModalService, // 对话框相关
     private transervice:TransService
     ) 
     { 
@@ -40,6 +45,17 @@ export class BooklistComponent implements OnInit {
   ngOnInit() {
     
     this.getStadiums();
+
+    //分隔符
+    this.listOfData = new Array(200).fill(0).map((_, index) => {
+      return {
+        id: index,
+        name: `Edward King ${index}`,
+        age: 32,
+        address: `London, Park Lane no. ${index}`
+      };
+    });
+    //分隔符
   }
 
   getStadiums(){
@@ -110,5 +126,196 @@ export class BooklistComponent implements OnInit {
 
   
   
+
+
+  //分割符
+  listOfSelection = [
+    {
+      text: 'Select All Row',
+      onSelect: () => {
+        this.onAllChecked(true);
+      }
+    },
+    {
+      text: 'Select Odd Row',
+      onSelect: () => {
+        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 !== 0));
+        this.refreshCheckedStatus();
+      }
+    },
+    {
+      text: 'Select Even Row',
+      onSelect: () => {
+        this.listOfCurrentPageData.forEach((data, index) => this.updateCheckedSet(data.id, index % 2 === 0));
+        this.refreshCheckedStatus();
+      }
+    }
+  ];
+  checked = false;
+  indeterminate = false;
+  listOfCurrentPageData: ItemData[] = [];
+  listOfData: ItemData[] = [];
+  setOfCheckedId = new Set<number>();
+
+  updateCheckedSet(id: number, checked: boolean): void {
+    if (checked) {
+      this.setOfCheckedId.add(id);
+    } else {
+      this.setOfCheckedId.delete(id);
+    }
+  }
+
+  onItemChecked(id: number, checked: boolean): void {
+    this.updateCheckedSet(id, checked);
+    this.refreshCheckedStatus();
+  }
+
+  onAllChecked(value: boolean): void {
+    this.listOfCurrentPageData.forEach(item => this.updateCheckedSet(item.id, value));
+    this.refreshCheckedStatus();
+  }
+
+  onCurrentPageDataChange($event: ItemData[]): void {
+    this.listOfCurrentPageData = $event;
+    this.refreshCheckedStatus();
+  }
+
+  refreshCheckedStatus(): void {
+    this.checked = this.listOfCurrentPageData.every(item => this.setOfCheckedId.has(item.id));
+    this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedId.has(item.id)) && !this.checked;
+  }
+
+
+
+
+  //对话框相关 begin
+  tplModal?: NzModalRef;
+  tplModalButtonLoading = false;
+  htmlModalVisible = false;
+  disabled = false;
+
+
+  createModal(): void {
+    this.modal.create({
+      nzTitle: 'Modal Title',
+      nzContent: 'string, will close after 1 sec',
+      nzClosable: false,
+      nzOnOk: () => new Promise(resolve => setTimeout(resolve, 1000))
+    });
+  }
+
+  createTplModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>): void {
+    this.tplModal = this.modal.create({
+      nzTitle: tplTitle,
+      nzContent: tplContent,
+      nzFooter: tplFooter,
+      nzMaskClosable: false,
+      nzClosable: false,
+      nzComponentParams: {
+        value: 'Template Context'
+      },
+      nzOnOk: () => console.log('Click ok')
+    });
+  }
+
+  destroyTplModal(): void {
+    this.tplModalButtonLoading = true;
+    setTimeout(() => {
+      this.tplModalButtonLoading = false;
+      this.tplModal!.destroy();
+    }, 1000);
+  }
+
+  createComponentModal(): void {
+    const modal = this.modal.create({
+      nzTitle: 'Modal Title',
+      nzContent: NzModalCustomComponent,
+      nzGetContainer: () => document.body,
+      nzComponentParams: {
+        title: 'title in component',
+        subtitle: 'component sub title，will be changed after 2 sec'
+      },
+      nzOnOk: () => new Promise(resolve => setTimeout(resolve, 1000)),
+      nzFooter: [
+        {
+          label: 'change component title from outside',
+          onClick: componentInstance => {
+            componentInstance!.title = 'title in inner component is changed';
+          }
+        }
+      ]
+    });
+    const instance = modal.getContentComponent();
+    modal.afterOpen.subscribe(() => console.log('[afterOpen] emitted!'));
+    // Return a result when closed
+    modal.afterClose.subscribe(result => console.log('[afterClose] The result is:', result));
+
+    // delay until modal instance created
+    setTimeout(() => {
+      instance.subtitle = 'sub title is changed';
+    }, 2000);
+  }
+
+  createCustomButtonModal(): void {
+    const modal: NzModalRef = this.modal.create({
+      nzTitle: 'custom button demo xxx',
+      // nzContent: 'pass array of button config to nzFooter to create multiple buttons yyy<> <a>aaa</a> ',
+      // nzContent: '<select> <option value=1>1</option></select>',
+      nzContent: 'remark:<input nz-input placeholder="修改年龄" >',
+      nzFooter: [
+        {
+          label: 'Close',
+          shape: 'round',
+          onClick: () => modal.destroy()
+        },
+        {
+          label: 'Confirm',
+          type: 'primary',
+          onClick: () => this.modal.confirm({ nzTitle: 'Confirm Modal Title', nzContent: 'Confirm Modal Content' })
+        },
+        {
+          label: 'Change Button Status',
+          type: 'danger',
+          loading: false,
+          onClick(): void {
+            this.loading = true;
+            setTimeout(() => (this.loading = false), 1000);
+            setTimeout(() => {
+              this.loading = false;
+              this.disabled = true;
+              this.label = 'can not be clicked！';
+            }, 2000);
+          }
+        },
+        {
+          label: 'async load',
+          type: 'dashed',
+          onClick: () => new Promise(resolve => setTimeout(resolve, 2000))
+        }
+      ]
+    });
+  }
+
+  openAndCloseAll(): void {
+    let pos = 0;
+
+    ['create', 'info', 'success', 'error'].forEach(method =>
+      // @ts-ignore
+      this.modal[method]({
+        nzMask: false,
+        nzTitle: `Test ${method} title`,
+        nzContent: `Test content: <b>${method}</b>`,
+        nzStyle: { position: 'absolute', top: `${pos * 70}px`, left: `${pos++ * 300}px` }
+      })
+    );
+
+    this.htmlModalVisible = true;
+
+    this.modal.afterAllClose.subscribe(() => console.log('afterAllClose emitted!'));
+
+    setTimeout(() => this.modal.closeAll(), 2000);
+  }
+  
+  //对话框相关 end
 
 }
